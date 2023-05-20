@@ -1,0 +1,78 @@
+[tool.poetry]
+name = "mva_sb_generative"
+version = "0.1.0"
+description = "Project for the MVA course 'Generative Modelling'"
+authors = [
+  "Benjamin Maurel <benjamin.maurel@ensae.fr>",
+  "Jérémie Stym-Popper <jeremie.stym-popper@ensae.fr>",
+  "Gabriel Watkinson <gabriel.watkinson@ensae.fr>",
+]
+readme = "README.md"
+packages = [{include = "mva_sb_generative"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.11"
+numpy = "^1.24.2"
+pandas = "^1.5.3"
+matplotlib = "^3.7.1"
+seaborn = "^0.12.2"
+scikit-learn = "^1.2.1"
+transformers = "^4.26.1"
+datasets = "^2.10.1"
+torch = "^2.0.0"
+evaluate = "^0.4.0"
+tensorboard = "^2.12.0"
+accelerate = "^0.18.0"
+plotly = "^5.14.1"
+kaleido = "0.2.1"
+# lightning = "^2.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+flake8-bugbear = "^23.2.13"
+flake8-comprehensions = "^3.10.1"
+flake8-simplify = "^0.19.3"
+pep8-naming = "^0.13.3"
+black = {extras = ["jupyter"], version = "^23.1.0"}
+nbqa = "^1.6.3"
+pytest = "^7.2.2"
+pytest-cov = "^4.0.0"
+ipykernel = "^6.21.3"
+ipywidgets = ">=7.0,<8.0"
+pre-commit = "^3.1.1"
+poethepoet = "^0.18.1"
+
+
+
+[tool.poetry.scripts]
+# Example nli_process_data = 'mva_snlp_canine.nli.preprocess_dataset:main'
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+line_length = 100
+float_to_top = true
+
+[tool.flake8]
+ignore = ['E203', 'E501', 'W503']
+max-line-length = 100
+count = true
+docstring-convention = 'google'
+
+# [tool.pytest.ini_options]
+# pythonpath = ["src"]
+
+[tool.poe.tasks]
+init_dev = [
+  { cmd = "poetry install --sync" },
+  { cmd = "pre-commit install" },
+]
+torch_cuda = [
+  { cmd = "poetry add numpy torch" },
+  { cmd = "pip install torch --force-reinstall --extra-index-url https://download.pytorch.org/whl/cu117" },
+]
