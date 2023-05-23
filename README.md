@@ -14,6 +14,8 @@ This is a group project realised by :
 
 Don't hesitate to contact any of us if you have any questions.
 
+This experiments presented here and in the report comes from modification of https://github.com/ghliu/DeepGSB/tree/main. 
+
 ## Installation
 
 1. Clone the repository.
@@ -21,28 +23,27 @@ Don't hesitate to contact any of us if you have any questions.
 git clone https://github.com/gwatkinson/mva_sb_generative
 ```
 
-2. Install the project and dependencies, creating a virtual environment with `poetry` (you need to [install poetry](https://python-poetry.org/docs/#installation) it beforehand). If you prefer to use an existing environment, you just have to activate it and run the same command:
+2. Install the project and dependencies, creating a virtual environment with conda
 ```bash
-poetry install
+cd mva_sb_generative
+conda env create --file requirements.yaml
+conda activate deepgsb
 ```
 
-3. Activate the created environment if needed.
-```bash
-source $(poetry env info --path)/bin/activate  # for linux
-# & ((poetry env info --path) + "\Scripts\activate.ps1")  # for windows powershell
-# poetry shell  # or this spawns a new shell
-```
-
-4. Install pre-commit, if you are planning to add code.
-```bash
-pre-commit install
-```
-
-5. Use Pytorch with GPU support (optional). Use this if Pytorch doesn't see your GPU. This reinstalls Pytorch in the virtual environment, and needs to be rerun after each modification of the environment.
-```bash
-poe torch_cuda
-```
 
 ## Reproduce the experiments
 
-blabla
+```bash
+cd DeepGSB
+bash run.sh Evac
+```
+## Credits
+
+```
+@inproceedings{liu2022deep,
+  title={Deep Generalized Schr{\"o}dinger Bridge},
+  author={Liu, Guan-Horng and Chen, Tianrong and So, Oswin and Theodorou, Evangelos A},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022}
+}
+```
