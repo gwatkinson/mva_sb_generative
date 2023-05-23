@@ -23,28 +23,17 @@ This experiments presented here and in the report comes from modification of htt
 git clone https://github.com/gwatkinson/mva_sb_generative
 ```
 
-2. Install the project and dependencies, creating a virtual environment with `poetry` (you need to [install poetry](https://python-poetry.org/docs/#installation) it beforehand). If you prefer to use an existing environment, you just have to activate it and run the same command:
+2. Install the project and dependencies, creating a virtual environment with conda
 ```bash
-poetry install
+cd mva_sb_generative
+conda env create --file requirements.yaml
+conda activate deepgsb
 ```
 
-3. Activate the created environment if needed.
-```bash
-source $(poetry env info --path)/bin/activate  # for linux
-# & ((poetry env info --path) + "\Scripts\activate.ps1")  # for windows powershell
-# poetry shell  # or this spawns a new shell
-```
-
-4. Install pre-commit, if you are planning to add code.
-```bash
-pre-commit install
-```
-
-5. Use Pytorch with GPU support (optional). Use this if Pytorch doesn't see your GPU. This reinstalls Pytorch in the virtual environment, and needs to be rerun after each modification of the environment.
-```bash
-poe torch_cuda
-```
 
 ## Reproduce the experiments
 
-blabla
+```bash
+cd DeepGSB
+bash run.sh Evac
+```
