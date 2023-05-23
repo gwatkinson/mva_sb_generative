@@ -14,6 +14,8 @@ This is a group project realised by :
 
 Don't hesitate to contact any of us if you have any questions.
 
+This experiments presented here and in the report comes from modification of https://github.com/ghliu/DeepGSB/tree/main. 
+
 ## Installation
 
 1. Clone the repository.
