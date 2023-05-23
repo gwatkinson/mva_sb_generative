@@ -37,3 +37,13 @@ conda activate deepgsb
 cd DeepGSB
 bash run.sh Evac
 ```
+## Credits
+
+```
+@inproceedings{liu2022deep,
+  title={Deep Generalized Schr{\"o}dinger Bridge},
+  author={Liu, Guan-Horng and Chen, Tianrong and So, Oswin and Theodorou, Evangelos A},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2022}
+}
+```
