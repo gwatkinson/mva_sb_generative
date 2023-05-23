@@ -1,58 +1,76 @@
-% !TeX root = main.tex
-
 \documentclass{article}
 
 
-% if you need to pass options to natbib, use, e.g.:
-%     \PassOptionsToPackage{numbers, compress}{natbib}
-\usepackage[final]{setup/neurips_2022}
+\PassOptionsToPackage{round}{natbib}
+\usepackage[final]{neurips_2022}
 
-\input{setup/packages.tex}
-\input{setup/custom.tex}
-\input{setup/math.tex}
 
-\bibliographystyle{setup/acl_natbib}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[colorlinks,citecolor=cyan,pagebackref=true,breaklinks=true,bookmarks=false]{hyperref}
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+
 
 \title{Likelihood training of Schrödinger bridge using Forward-backward SDEs theory}
 
 
-\author{
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{%
   Benjamin Maurel\\
   MVA - ENSAE\\
+  École Normale Supérieure de Paris-Saclay\\
+  Gif-sur-Yvettes, 91190, France\\
   \texttt{benjamin.maurel@ensae.fr}\\
+  % examples of more authors
   \And
-  Jérémie Stym-Popper\\
+  Jérémie Stym-Popper\\MF
   MVA - ENSAE\\
+  École Normale Supérieure de Paris-Saclay\\
+  Gif-sur-Yvettes, 91190, France\\
   \texttt{jeremie.stym-popper@ensae.fr}\\
   \And
   Gabriel Watkinson\\
   MVA - ENSAE\\
+  École Normale Supérieure de Paris-Saclay\\
+  Gif-sur-Yvettes, 91190, France\\
   \texttt{gabriel.watkinson@ensae.fr}\\
 }
 
+\input{packages}
+\input{commandes_math}
+\input{custom}
 
 \begin{document}
 
 \maketitle
 
-% Possible questions:
-% What are the benefits of this formulation over classical diffusion models?
-% What are the links between this approach and stochastic control? How can we leverage this link?
-% Can this framework be extended to solve any quasi-parabolic PDEs? What are the potential applications?
-
-% \begin{abstract}
-% \end{abstract}
 
 \section*{Introduction}
 
+\let\thefootnote\relax\footnote{Link to our GitHub: \url{https://github.com/gwatkinson/mva_sb_generative}, containing code of our experiments and further images and resources}
+
 Scored-based Generative Models (SGMs) have gained significant attention in the field of deep image generation.
 Since their introduction by \citet{song2020score}, SGMs have emerged as the state-of-the-art approach for image generation.
-Unlike likelihood-based models such as VAEs or normalizing flows, which learn the probability density function directly, or adversarial-based models like GANs.
-SGMs learn a mapping between a simple distribution, typically Gaussian, and complex, high-dimensional, and often intractable data distributions, such as images.
-These models offer several advantages over existing approaches, including high-quality sample generation comparable to GANs without the instability of adversarial training, flexible model architectures, exact log-likelihood computation, and the ability to solve inverse problems without re-training models.
+Unlike likelihood-based models such as VAEs or normalizing flows, which learn the probability density function directly, or adversarial-based models like GANs,
+SGMs learn a mapping between a simple distribution, typically Gaussian, and a complex, high-dimensional, and often intractable data distribution, such as images.
+These models offer several advantages over existing approaches, including high-quality sample generation comparable to GANs without the instability of adversarial training, flexible model architectures and the ability to solve inverse problems without re-training models.
 However, SGMs also suffer from pitfalls that limit their applicability, such as difficult training procedure, the impossibility to use a complex distribution as the prior, the fact that the drift can only be linear or degenerate, and slow training and sampling processes compared to other methods.
 
-To address these limitations, recent works by \cite{debortoli2023diffusion, pmlr-v139-wang21l, vargas2021solving} have proposed a new class of generative models inspired by Optimal Transport (OT) theory, specifically using Schrödinger Bridges (SB) \cite{schrodinger1932theorie}.
+To address these limitations, recent works by \cite{debortoli2023diffusion, pmlr-v139-wang21l, vargas2021solving} have proposed a new class of generative models inspired by Optimal Transport theory, specifically using Schrödinger Bridges (SB) \cite{schrodinger1932theorie}.
 SBs, similar to SGMs, aim to learn a mapping between two distributions in a finite horizon.
 However, SBs offer greater flexibility by allowing the mapping between arbitrary distributions, making them more appealing.
 The relationship between SBs and SGMs was not clearly established, as SGMs rely on Stochastic Differential Equations (SDEs), whereas SBs are based on Partial Differential Equations (PDEs).
@@ -66,28 +84,11 @@ In this report, we will first introduce the two classical methods, Scored-based 
 Finally, we will discuss further extensions of this paper, including an application of the method with the Hamilton-Jacobi-Bellman PDE.
 
 
-% Recently, Scored-based Generative Model (SGM) have received a lot of attention in the field of deep image generation.
-% After their introduction by \citet{song2020score}, SGMs have become the state of the art in image generation.
-% They have supplanted likelihood-based models, such as VAEs or normalizing flows, which directly learn the distribution's probability density function via maximum likelihood, or adversarial based models, such as GANs.
-% SGMs have several important advantages over existing model families: GAN-level sample quality without the instable adversarial training, flexible model architectures, exact log-likelihood computation, and inverse problem solving without re-training models.
-% However, SGMs also suffer from a few major pitfalls: they are difficult to train, the prior distribution has to be simple, the drift cannot be complex, and they are slow to train and sample from.
-
-% To try and address these limitations, \cite{debortoli2023diffusion, pmlr-v139-wang21l, vargas2021solving} have proposed a new class of generative model inspired by Optimal Transport (OT) theory using Schrödinger Bridges (SB; \cite{schrodinger1932theorie}).
-% Similarly to SGMs, the objective of SBs is to learn a mapping between two distributions in finite horizon, but, unlike SGMs, SBs are capable to map two arbitrary distributions, which makes them more flexible, thus more attractive.
-% However, the relation between SBs and SGMs was not clearly established, as SGMs rely on Stochastic Differential Equations (SDEs) whereas SBs are based on Partial Differential Equations (PDEs).
-
-% \cite{chen2023likelihood} breaches the gap between those two seemingly different mathematical objects, inspired by the field of Stochastic Optimal Control, and using Forward-Backward Stochastic Differential Equations (FBSDEs). Eventually, it proposes a method that enables to solve PDEs with SDEs, which is computationally more efficient and more precise than solving PDEs.
-% This vision naturally introduces a new way to train SBs that resemble the joint optimization for diffusion flow-based models.
-% The authors also propose a more traditional Iterative Proportional Fitting approach (IPF; \cite{kullback1968probability,debortoli2023diffusion}).
-
-% The two classical methods (SGM and SB) will be presented before studying in a third time the FBSDE method that enables to link the two methods. Finally, we will give further extensions to this paper presenting an application of the method with the Hamilton-Jacobi-Bellman PDE.
-
-
 
 \section{Some reminders about Score-based Generative Model}
 
 Given a dataset $\braces{\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_N}$ of $N$ samples in $\mathbb{R}^d$, the goal of generative models is to learn the underlying data distribution $p_\mathrm{data}$, as to be able to generate new samples from this distribution.
-The go to approach for this kind of problem is to use maximum likelihood estimation (MLE) to learn the parameters of a parametric model $p_\theta$ that approximates the distribution. However, this relies on the assumption that $p_\theta$ be a normalized density function. To do so, we have to calculate the normalizing constant, which is intractable in high dimension. Therefore, to train such models using MLE, we either have to restrict the architectures, e.g. to invertible networks in flow models, or approximate the normalizing constant, using variational inference in VAEs for instance. This is not ideal, as it limits the flexibility of the model and the quality of the approximation.
+The go-to approach for this kind of problem is to use maximum likelihood estimation (MLE) to learn the parameters of a parametric model $p_\theta$ that approximates the distribution. However, this relies on the assumption that $p_\theta$ be a normalized density function. To do so, we have to calculate the normalizing constant, which is intractable in high dimension. Therefore, to train such models using MLE, we either have to restrict the architectures, e.g. to invertible networks in flow models, or approximate the normalizing constant, using MCMC methods for example. This is not ideal, as it limits the flexibility of the model and the quality of the approximation.
 
 Another solution is to use the score function $s_\theta(x) = \nabla_x \log p_\theta(x)$ instead of the density function $p_\theta$.
 This makes the normalization constant disappear thanks to the gradient, allowing a wider range of architectures.
@@ -102,7 +103,7 @@ This diffusion process is characterized by a stochastic differential equation (S
     \label{eq:forward_sde_sgm}
 \end{equation}
 where $f(\cdot, t) : \R^n \rightarrow \R^n$, $g(t) \in \R$ are the drift and diffusion coefficients, and $\mathbf{W}_t \in \R^n$ is a standard Wiener process.
-For a large time step, we have that $p_T \approx p_\mathrm{prior}$ that closely ressemble a Gaussian distribution, which is easy to sample from.
+For a large time step, we have that $p_T \approx p_\mathrm{prior}$ that closely resemble a Gaussian distribution, which is easy to sample from.
 
 The associated backward SDE is:
 \begin{equation}
@@ -111,10 +112,11 @@ The associated backward SDE is:
 \end{equation}
 
 The score function appears naturally in the backward SDE, which is the reason why SGMs are called score-based. In the case where the drift is simple (e.g. linear or degenerate), it is possible to learn a score network $s(t, x; \theta)$ by regressing the outputs to the ground truth, i.e $\esp{\lambda(t) \norme{s(t, x; \theta) - \nabla_x \log p_{t|x_0}}^2}$, where the expectation is taken over the forward SDE.
-$\lambda(t)$ is a weighting function that is crucial in practice but hard to choose well.
+$\lambda(t)$ is a weighting function that is crucial in practice, but hard to choose well.
 
-More recently, \citet{song2021maximum} have found a Evidence Lower bound (ELBO) that lower-bounds the log-likelihood of the SGM:
+More recently, \citet{song2021maximum} have found a lower-bounds to the log-likelihood of the SGM, resulting in an Evidence Lower bound (ELBO) :
 \begin{equation}
+\label{eq:sgm_logl}
 \log p_0^\mathrm{SGM}(\mathbf{x}_0)
 \ge
 \esp{\log p_T(\mathbf{X}_t)}
@@ -131,7 +133,7 @@ Once the model is trained, we can just substitute the score function by the lear
 
 
 
-\section{Schrodinger Bridge}
+\section{Schrödinger Bridge}
 
 Unlike SGMs, Schrödinger Bridges (SB) are not generative models, but rather a way to interpolate between two distributions $\mu_0$ and $\mu_1$.
 There were first introduced by \citet{schrodinger1932theorie} and are related to the field of regularized optimal transport.
@@ -145,13 +147,13 @@ The \textbf{Benamou-Brenier} reformulation of the entropy-regularized optimal tr
 \begin{equation}
     \label{eq:sb_pdes}
     \begin{cases}
-    \frac{\partial \Psi}{\partial t} = -\nabla_x \Psi^\top f - \frac{1}{2}\mathrm{Tr}(g^2 \nabla_x^2 \Psi) \\
+    \frac{\partial \Psi}{\partial t} = -\nabla_x \Psi^\top f - \frac{1}{2}\mathrm{Tr}(g^2 \nabla_x^2 \Psi) \\[7pt]
     \frac{\partial \widehat{\Psi}}{\partial t} = -\nabla_x \cdot (\widehat{\Psi} f) + \frac{1}{2}\mathrm{Tr}(g^2 \nabla_x^2 \widehat{\Psi})
     \end{cases}
     \mathrm{s.t.}
-    \begin{array}{l}
-        \Psi(0, \cdot) \widehat{\Psi}(0, \cdot) = p_\mathrm{data}\\
-        \Psi(T, \cdot) \widehat{\Psi}(T, \cdot) = p_\mathrm{prior}
+    \begin{array}{lcl}
+        \Psi(0, \cdot) \widehat{\Psi}(0, \cdot) &=& p_\mathrm{data}\\
+        \Psi(T, \cdot) \widehat{\Psi}(T, \cdot) &=& p_\mathrm{prior}
     \end{array}
 \end{equation}
 where $\Psi$ and $\widehat\Psi$ can also be seen as solutions to the Schrödinger system of equations (we recall that the trace of the Hessian is the Laplace operator). $f$ and $g$ are functions defined on the same space as above.
@@ -169,187 +171,382 @@ Those SDEs are really similar to the ones of the SGM model, except for the terms
 In this situation, we have to learn both the score function and the drift function, while SGM only learns the score.
 
 % The whole idea is to get rid of this term "$\nabla_x\log\widehat\Psi(t,\mathbf{X}_t)$" by adapting the ELBO loss.
-To create sample using this method, we have to solve the PDEs \eqref{eq:sb_pdes} to obtain $\widehat\Psi$.
+To create samples using this method, we have to solve the PDEs \eqref{eq:sb_pdes} to obtain $\widehat\Psi$.
 However, those are hard to solve, the proposed method of FBSDEs (Forward-Backward SDEs) is shown to be a convenient way to link the optimality conditions of the SB problem to the ELBO maximization of the likelihood $\log_0^\mathrm{SGM}(\mathbf{x}_0)$.
 
+
+
+
 \section{Proposed Method}
-There are two main methods to solve PDEs: linearization-based method and sampling-based method. The latter is a consequence of the Feynman-Kac lemma that provides a solution to parabolic PDEs with a conditional expectation (suitable for sampling), which establishes a link between this kind of PDE with stochastic processes. Here, the Nonlinear Feynman-Kac formula enables to link parabolic PDEs to forward-backward coupled SDEs as below. First let's introduce a more general framework, so that (1) and (2) fall inside:
 
-\begin{equation}\label{eq:fbsde1}
-\left\{\begin{array}{ll}
-   \dint\mathbf{X}_t  & = f(t,\mathbf{X}_t)\dint t + G(t,\mathbf{X}_t)\dint\mathbf{W}_t, \quad \mathbf{X}_0 =\mathbf{x}_0  \\
-   \dint\mathbf{Y}_t & = - h(t,\mathbf{X}_t, \mathbf{Y}_t,\mathbf{Z}_t)\dint t + \mathbf{Z}(t,\mathbf{X}_t)^\top \dint\mathbf{W}_t,\quad \mathbf{Y}_T = \phi(\mathbf{X}_T).
-\end{array}\right.
+There are two main methods to solve PDEs: linearization-based method and sampling-based method. The latter is a consequence of the Feynman-Kac lemma that provides a solution to parabolic PDEs with a conditional expectation (suitable for sampling), which establishes a link between this kind of PDE with stochastic processes. Here, the Nonlinear Feynman-Kac formula enables to link parabolic PDEs to forward-backward coupled SDEs as below. First, let's introduce a more general framework, so that \eqref{eq:forward_sde_sgm}, \eqref{eq:backward_sde_sgm} and \eqref{eq:sb_sdes} fall inside:
+\begin{equation}
+    \label{eq:general_sdes}
+    % \label{eq:fbsde1}
+    \begin{cases}
+    \dint\mathbf{X}_t  = f(t,\mathbf{X}_t)\dint t + G(t,\mathbf{X}_t)\dint\mathbf{W}_t
+    & \mathbf{X}_0 =\mathbf{x}_0 \\[5pt]
+    \dint\mathbf{Y}_t = - h(t,\mathbf{X}_t, \mathbf{Y}_t,\mathbf{Z}_t)\dint t + \mathbf{Z}(t,\mathbf{X}_t)^\top \dint\mathbf{W}_t
+    & \mathbf{Y}_T = \phi(\mathbf{X}_T)
+    \end{cases}
 \end{equation}
 
-Then, with the \textbf{Itô Formula} \cite{EXARCHOS2018159}, it is shown that if $\mathbf{v} \equiv v(t,\mathbf{X}_t)$ and $G(t,\mathbf{X}_t)$ are solution of the following PDE:
-\begin{equation}\label{eq:fbpde1}
-\frac{\partial v}{\partial t} + \frac{1}{2}\mathrm{Tr}(\nabla_\mathbf{x}^2 vGG^\top) + \nabla_\mathbf{x}v^\top f + h(t,\mathbf{x},v,G^\top\nabla_\mathbf{x}v) = 0, \quad v(T,\mathbf{x}) = \phi(\mathbf{x})
+% \begin{equation}\label{eq:fbsde1}
+% \left\{\begin{array}{ll}
+%    \dint\mathbf{X}_t  & = f(t,\mathbf{X}_t)\dint t + G(t,\mathbf{X}_t)\dint\mathbf{W}_t, \quad \mathbf{X}_0 =\mathbf{x}_0  \\
+%    \dint\mathbf{Y}_t & = - h(t,\mathbf{X}_t, \mathbf{Y}_t,\mathbf{Z}_t)\dint t + \mathbf{Z}(t,\mathbf{X}_t)^\top \dint\mathbf{W}_t,\quad \mathbf{Y}_T = \phi(\mathbf{X}_T).
+% \end{array}\right.
+% \end{equation}
+
+Then, with the Itô Formula \citep{EXARCHOS2018159}, it is shown that if $\mathbf{v} \equiv v(t,\mathbf{X}_t)$ and $G(t,\mathbf{X}_t)$ are solution of the following PDE:
+\begin{equation}
+\label{eq:general_pde}
+\frac{\partial v}{\partial t}
++ \frac{1}{2}\mathrm{Tr}(\nabla_\mathbf{x}^2 vGG^\top)
++ \nabla_\mathbf{x}v^\top f
++ h(t,\mathbf{x},v,G^\top\nabla_\mathbf{x}v)
+= 0, \quad v(T,\mathbf{x}) = \phi(\mathbf{x})
 \end{equation}
-Then we get :
-$$
+
+Then, with $\mathbf{Y}_t$ and $\mathbf{Z}_t$ the variables from \eqref{eq:general_sdes}, we have that :
+\[
 v(t,\mathbf{X}_t) = \mathbf{Y}_t \quad \text{and} \quad G(t,\mathbf{X}_t)^\top \nabla_\mathbf{x}v(t,\mathbf{X}_t) = \mathbf{Z}_t
-$$
-Where $\mathbf{Y}_t$ and $\mathbf{Z}_t$ are variables from (\ref{eq:fbsde1}). Therefore, it is possible to solve one of the two problem \ref{eq:fbsde1} or \ref{eq:fbpde1} to solve the other. The equation (\ref{eq:fbpde1}) can be viewed as a second-order parabolic PDE, which can be solved using FBSDE (\citeauthor{pmlr-v120-pereira20a} \citeyear{pmlr-v120-pereira20a}). Similarly, instead of solving the PDEs linked to the SB problem, it is possible to solve the underlying forward and backward SDEs. But some adaptations are necessary. Then, a new process is defined:
-\begin{equation}\label{eq:newFBSDE}
-\def\arraystretch{2.2}
-\left\{\begin{array}{ll}
-\dint\mathbf{X}_t & = (f+g\mathbf{Z}_t) \dint t + g \dint \mathbf{W}_t  \\
-  \dint\mathbf{Y}_t & = \frac{1}{2}\mathbf{Z}_t^\top\mathbf{Z}_t\dint t + \mathbf{Z}_t^\top\dint\mathbf{W}_t \\
-  \dint\widehat{\mathbf{Y}}_t & = \pars{\frac{1}{2}\widehat{\mathbf{Z}}_t^\top\widehat{\mathbf{Z}}_t + \nabla_\mathbf{x} . (g\widehat{\mathbf{Z}}_t - f) + \widehat{\mathbf{Z}}_t^\top\widehat{\mathbf{Z}}_t} \dint t + \widehat{\mathbf{Z}}_t^\top\dint\mathbf{W}_t
-\end{array}\right.
+\]
+
+This give the possibility to solve either one of the problems, the SDEs \eqref{eq:general_sdes} or the second-order parabolic PDE \eqref{eq:general_pde}.
+This is convenient computational wise, as the Forward-Backward SDE method \citep{pmlr-v120-pereira20a} provides a way to solve second-order parabolic PDE.
+
+Similarly, instead of directly solving the PDEs linked to the SB problem, it is possible to solve the underlying forward and backward SDEs. Using this framework for SBs, we obtain that:
+\begin{equation}
+    \label{eq:sb_fbsde}
+    \begin{cases}
+        \displaystyle \dint\mathbf{X}_t = (f+g\mathbf{Z}_t) \dint t + g \dint \mathbf{W}_t
+        \\[7pt]
+        \displaystyle \dint\mathbf{Y}_t = \frac{1}{2}\mathbf{Z}_t^\top\mathbf{Z}_t\dint t + \mathbf{Z}_t^\top\dint\mathbf{W}_t
+        \\[7pt]
+        \displaystyle \dint\widehat{\mathbf{Y}}_t = \pars{
+        \frac{1}{2}\widehat{\mathbf{Z}}_t^\top\widehat{\mathbf{Z}}_t
+        + \nabla_\mathbf{x} . (g\widehat{\mathbf{Z}}_t - f)
+        + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t} \dint t
+        + \widehat{\mathbf{Z}}_t^\top\dint\mathbf{W}_t
+    \end{cases}
 \end{equation}
-Where, under the same PDE as in (\ref{eq:fbpde1}), where $\mathbf{v}$ is replaced with $\log \Psi$ and $\log\widehat\Psi$. It is then possible to use two times the \textbf{Itô formula} with $\dint \log \Psi$ and $\dint \log\widehat\Psi$. Therefore we have:
-$$
+where, in the second-order parabolic PDE \eqref{eq:general_pde}, $v$ is replaced with $\log \Psi$ and $\log\widehat\Psi$. The constraints are $X_0 = x_0$ and $\mathbf{Y}_T + \widehat{\mathbf{Y}}_T = \log p_{\rm prior}(\mathbf{X}_T)$.
+
+Then, the nonlinear Feynman-Kac relations between the FBSDEs \eqref{eq:sb_fbsde} and PDEs \eqref{eq:sb_pdes} are:
+\begin{equation*}
 \begin{aligned}
     \mathbf{Y}_t = \log\Psi(t,\mathbf{X}_t), \quad \mathbf{Z}_t = g \nabla_\mathbf{x}\log \Psi(t,\mathbf{X}_t)\\
     \widehat{\mathbf{Y}}_t = \log\widehat\Psi(t,\mathbf{X}_t), \quad \widehat{\mathbf{Z}}_t = g\nabla_\mathbf{x}\log\widehat\Psi(t,\mathbf{X}_t)
 \end{aligned}
-$$
-Then, it is easy to check that $\mathbf{Y}_t + \widehat{\mathbf{Y}}_t = \log(\Psi(t,\mathbf{X}_t)\widehat\Psi(t,\mathbf{X}_t)) = \log p_t^\mathrm{SB}(\mathbf{X}_t)$ according to \ref{eq:SB-PDE} constraints.
+\end{equation*}
 
-We can also notice that if we have an approximation of $\mathbf{Z}_t$ and $\widehat{\mathbf{Z}}_t$, $g$ being known (by design), we also have an approximation of $\nabla_x\log\widehat\Psi(t,\mathbf{X}_t)$ and $\nabla_x\log\Psi(t,\mathbf{X}_t)$. $\mathbf{Z}_t$ and $\widehat{\mathbf{Z}}_t$ can be understood as policy to learn in order that $p_T$ reaches $p_\mathrm{prior}$, which is imposed in the SB model but not in SGM (where the \textit{prior} distribution is approximated). Therefore $\mathbf{Z}_t$ force the forward process to reach the prior distribution while $\widehat{\mathbf{Z}}_t$ makes adjustments accordingly in the backward process.
+We also get that $\mathbf{Y}_t + \widehat{\mathbf{Y}}_t = \log(\Psi(t,\mathbf{X}_t)\widehat\Psi(t,\mathbf{X}_t)) = \log p_t^\mathrm{SB}(\mathbf{X}_t)$.
 
-Now, using the fact that:
+Furthermore, by considering approximations of $\mathbf{Z}_t$ and $\widehat{\mathbf{Z}}_t$, with $g$ known (by design), it becomes possible to approximate $\nabla_x\log\widehat\Psi(t,\mathbf{X}_t)$ and $\nabla_x\log\Psi(t,\mathbf{X}_t)$. In this context, $\mathbf{Z}_t$ and $\widehat{\mathbf{Z}}t$ can be interpreted as policies that are learned to align the distributions $p_T$ and $p_\mathrm{prior}$. While this requirement is imposed in the SB model, it is not present in SGM, where the prior distribution is approximated. Consequently, $\mathbf{Z}_t$ directs the forward process towards the prior distribution, while $\widehat{\mathbf{Z}}_t$ adjusts the backward process accordingly.
 
+From there, \cite{chen2023likelihood} show that, given a path sampled from the forward
+SDE of \eqref{eq:sb_fbsde}, the solutions to the backward SDEs at $t = 0$ provide an unbiased estimation of the log-likelihood of the data point $x_0$:
+\begin{equation}\label{9}\tag{9}
+    \esp{\mathbf{Y}_0 + \widehat{\mathbf{Y}}_0|\mathbf{X}_0 = x_0} =
+    \log p_0^\mathrm{SB}(x_0) =
+    \log p_{\rm data}(x_0)
+\end{equation}
+
+Now, similarly to the log-likelihood of SGM models \eqref{eq:sgm_logl}, we have that:
 \begin{align}
-\esp{\mathbf{Y}_0 + \widehat{\mathbf{Y}}_0|\mathbf{X}_0 = x} & =  \nabla_x\log\widehat\Psi(t,\mathbf{x})\\
-\esp{\mathbf{Y}_0|\mathbf{X}_0 = x} &= \esp{\mathbf{Y}_T - \int_0^T \dint \mathbf{Y}_t \bigg\rvert\mathbf{X}_0 = x}\\
-\esp{\mathbf{Y}_0|\mathbf{X}_0 = x} & = \esp{\mathbf{Y}_T|\mathbf{X}_0 = x} -\int_0^T \pars{\esp{\int_0^T \frac{1}{2}\|\mathbf{Z}_t\|²\bigg\rvert\mathbf{X}_0 = x} + \esp{\mathbf{Z}_t \dint \mathbf{W}_t|\mathbf{X}_0 = x}}\dint t \\
-\esp{\widehat{\mathbf{Y}}_0|\mathbf{X}_0 = x} & = \esp{\widehat{\mathbf{Y}}_T|\mathbf{X}_0 = x} - \int_0^T \esp{\frac{1}{2}\|\widehat{\mathbf{Z}}_t\|^2 + \nabla_x \cdot (g\widehat{\mathbf{Z}}_t - f) + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t}\dint t
+    \log p_0^\mathrm{SB}(x_0)
+    &= \esp{\mathbf{Y}_T + \widehat{\mathbf{Y}}_T - \int_0^T \dint \mathbf{Y}_t + \mathbf{\widehat{Y}}_t\bigg\rvert\mathbf{X}_0 = x_0} \notag \\
+    &= \esp{\mathbf{Y}_T + \widehat{\mathbf{Y}}_T|\mathbf{X}_0 = x_0}  \\
+    & \quad \quad \quad - \int_0^T \esp{
+    \frac{1}{2}\mathbf{Z}_t^\top\mathbf{Z}_t
+    + \frac{1}{2}\widehat{\mathbf{Z}}_t^\top\widehat{\mathbf{Z}}_t
+    + \nabla_\mathbf{x} . (g\widehat{\mathbf{Z}}_t - f)
+    + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t
+    }
+    \dint t \notag
+    % \\
+    % &= \esp{\log p_Y^\mathrm{SB}(\mathbf{X}_T)}
+    % - \int_0^T \esp{
+    % \frac{1}{2}  \norme{\mathbf{Z}_t}^2
+    % + \norme{\widehat{\mathbf{Z}}_t}^2
+    % + \nabla_x \cdot (g\widehat{\mathbf{Z}}_t - f)
+    % + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t}
+    % \dint t
 \end{align}
 
 
+% \begin{align*}
+% \esp{\mathbf{Y}_0 + \widehat{\mathbf{Y}}_0|\mathbf{X}_0 = x} & =  \nabla_x\log\widehat\Psi(t,\mathbf{x})\\
+% \esp{\mathbf{Y}_0|\mathbf{X}_0 = x} &= \esp{\mathbf{Y}_T - \int_0^T \dint \mathbf{Y}_t \bigg\rvert\mathbf{X}_0 = x}\\
+% \esp{\mathbf{Y}_0|\mathbf{X}_0 = x} & = \esp{\mathbf{Y}_T|\mathbf{X}_0 = x} -\int_0^T \pars{\esp{\int_0^T \frac{1}{2}\|\mathbf{Z}_t\|²\bigg\rvert\mathbf{X}_0 = x} + \esp{\mathbf{Z}_t \dint \mathbf{W}_t|\mathbf{X}_0 = x}}\dint t \\
+% \esp{\widehat{\mathbf{Y}}_0|\mathbf{X}_0 = x} & = \esp{\widehat{\mathbf{Y}}_T|\mathbf{X}_0 = x} - \int_0^T \esp{\frac{1}{2}\|\widehat{\mathbf{Z}}_t\|^2 + \nabla_x \cdot (g\widehat{\mathbf{Z}}_t - f) + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t}\dint t
+% \end{align*}
+
+
 This allows them to derive the theorem that solves all our issues:
-\begin{equation}\label{eq:logpSB}
+\begin{equation}
+\label{eq:logpSB}
 \begin{aligned}
-\log p_0^\mathrm{SB}(\mathbf{x}_0) & = \esp{\log p_T(\mathbf{X}_T)}- \int_0^T \esp{\frac{1}{2}\|\mathbf{Z}_t\|^2 + \frac{1}{2}\|\widehat{\mathbf{Z}}_t\|^2 + \nabla_x \cdot (g\widehat{\mathbf{Z}}_t - f) + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t} \dint t
+\log p_0^\mathrm{SB}(x_0) & = \esp{\log p_T(\mathbf{X}_T)}- \int_0^T \esp{\frac{1}{2}\|\mathbf{Z}_t\|^2 + \frac{1}{2}\|\widehat{\mathbf{Z}}_t\|^2 + \nabla_x \cdot (g\widehat{\mathbf{Z}}_t - f) + \widehat{\mathbf{Z}}_t^\top \mathbf{Z}_t} \dint t
 \end{aligned}
 \end{equation}
 
 We now have an ELBO to maximize with every term tractable.
-That allows us to use a trainable network to learn the optimal controls $\mathbf{Z}_t$ and $\widehat{\mathbf{Z}}_t$ only, that are the optimal forward and backward drifts for SB.
+That allows us to use two trainable networks to learn the optimal controls $\mathbf{Z}_t^\theta$ and $\widehat{\mathbf{Z}}_t^\phi$ only, that are the optimal forward and backward drifts for SB.
+
+This is a generalisation of SGM, indeed, for $(\mathbf{Z}_t^\theta, \widehat{\mathbf{Z}}_t^\phi) = (0, g s_t)$, the SB log-likelihood objective is the same as \eqref{eq:sgm_logl}. SBs allow for a wider array of drifts.
+
+
 
 \section{Going further : SB FB-SDE to solve PDEs}
-It is possible to train neural network in order to sample paths that solve partial differential equations. In this part, some applications will be presented using the FBSDEs method to solve complexe PDEs.
 
-%\subsection{Quelques exemples de domaine où la résolution de PDEs est essentielle}
+Neural networks can be trained to sample paths that solve partial differential equations (PDEs). In this section, we aim to explore the connection between the SB-FBSDE method and the solution of complex PDEs.
 
-A famous example is the Hamilton-Jacobi-Bellman (HJB) PDE. It is often used in optimal control theory since its solution gives the sought value function for an optimal control problem, and it plays a crucial role in dynamic programming providing efficient methods solving variational problems. The HJB PDE can be written as follows:
 
-$$
-\begin{aligned}
-&\frac{\partial V(t,x)}{\partial t} + \min_u\braces{\frac{\partial V(t,x)}{\partial x}\times F(x,u) + C(x,u)} = 0\\
-&\mathrm{s.t.} \quad V(T,x) = \phi(x(T))
-\end{aligned}
-$$
-Where $\phi(.)$ is the function that gives the terminal state cost, $C(.)$ is a quadratic cost function and and $F(x(t),u(t)) = \dot{x}(t),\, \forall t \in [0,T]$. For instance, we can take the mathematical framework of \citeauthor{pereira2019deep} \citeyear{pereira2019deep} where the stochastic optimal control (SOC) problem is the following:
-\begin{equation}\label{eq:SOC-HJB}\tag{SOC-HJB}
+
+\subsection{An introduction to the Hamilton-Jacobi-Bellman PDE}
+
+One widely known example of a PDE is the Hamilton-Jacobi-Bellman (HJB) equation. It is commonly used in optimal control theory, as its solution provides the sought-after value function for an optimal control problem. The HJB equation also plays a crucial role in dynamic programming by offering efficient methods for solving variational problems. The HJB PDE can be expressed as follows:
+
+
+\begin{equation}
+\frac{\partial V(t,x)}{\partial t} + \min_u\braces{\frac{\partial V(t,x)}{\partial x}\times F(x,u) + C(x,u)} = 0
+\quad \mathrm{s.t. } V(T,x) = \phi(x(T))
+\end{equation}
+Here, $\phi(\cdot)$ represents the function that determines the terminal state cost, $C(\cdot)$ is a quadratic cost function, and $F(x(t),u(t)) = \dot{x}(t),, \forall t \in [0,T]$.
+
+For instance, we can consider the mathematical framework proposed by \cite{pereira2019deep} for stochastic optimal control (SOC) problems, which can be formulated as:
+\begin{equation}
+    \label{eq:SOC-HJB}\tag{SOC-HJB}
     J(t,\mathbf{x}(t);\mathbf{u}(t)) = \esp[\Q]{\int_t^T\pars{q(s,\mathbf{x}(s)) + \frac{1}{2}\mathbf{u}(s)^\top\mathbf{R}\mathbf{u}(s)}\dint s + \phi(\mathbf{x}(T)}
 \end{equation}
-Where
-$$
-\left\{\begin{array}{ll}
-  \dint\mathbf{x}(t) & = (\mathbf{f}(t,\mathbf{x}(t)) + \mathbf{G}(t,\mathbf{x}(t))\mathbf{u}(t))\dint t + \sigma \mathbf{G}(t,\mathbf{x}(t))\mathbf{u}(t)\dint v(t) + \mathbf{\Sigma}(t,\mathbf{x}(t))\dint \mathbf{w}(t) \\
-    \mathbf{x}(0) & = \xi
-\end{array}\right.
-$$
-and where $\mathbf{w}$ is a vector of mutually independent one dimensional variables following a standard Brownian motion (hence the probability measure $\Q$). The aim is to find the function value of the \ref{eq:SOC-HJB} problem, meaning:
-$$
-\left\{\begin{array}{ll}
- V(t,\mathbf{x}(t))  & = \inf_{\mathbf{u}(t)\in\mathcal{U}([t,T])} J(t,\mathbf{x}(t);\mathbf{u}(t))  \\
-  V(T,\mathbf{x}(T)) & = \phi(\mathbf{x}(T))
-\end{array}\right.
-$$
-Finally, we get the following partial differential equation:
-\begin{equation}\label{eq:HJB-PDE}\tag{PDE-HJB}
-    \left\{\begin{array}{ll}
-     \frac{\partial V(t,\mathbf{x})}{\partial t} + q + \nabla_\mathbf{x}V(t,\mathbf{x})^\top \mathbf{f} - \frac{1}{2}\nabla_\mathbf{x}V(t,\mathbf{x})^\top \mathbf{G}\hat{\mathbf{R}}^{-1}\mathbf{G}^\top \nabla_\mathbf{x}V(t,\mathbf{x}) + \frac{1}{2}\mathrm{Tr}(\nabla_\mathbf{x}^2 V(t,\mathbf{x})\mathbf{\Sigma}\mathbf{\Sigma}^\top) = 0 \\
-      V(T,\mathbf{x}(T))  = \phi(\mathbf{x}(T))
-    \end{array}\right.
+where
+\begin{equation*}
+    \begin{cases}
+        \displaystyle \dint\mathbf{x}(t)
+        = (\mathbf{f}(t,\mathbf{x}(t))
+        + \mathbf{G}(t,\mathbf{x}(t))\mathbf{u}(t)) \dint t
+        + \sigma \mathbf{G}(t,\mathbf{x}(t))\mathbf{u}(t)\dint v(t)
+        + \mathbf{\Sigma}(t,\mathbf{x}(t)) \dint
+        \mathbf{w}(t) \\[5pt]
+        \displaystyle \mathbf{x}(0) = \xi
+    \end{cases}
+\end{equation*}
+
+and $\mathbf{w}$ is a vector of mutually independent one-dimensional variables following a standard Brownian motion (thus leading to the probability measure $\mathbb{Q}$). The objective is to find the function value for the SOC-HJB problem, given by:
+\begin{equation}
+    \begin{cases}
+        \displaystyle V(t,\mathbf{x}(t))
+        = \inf_{\mathbf{u}(t)\in\mathcal{U}([t,T])}
+        J(t,\mathbf{x}(t) ;\mathbf{u}(t))
+        \\[7pt]
+        \displaystyle V(T,\mathbf{x}(T)) = \phi(\mathbf{x}(T))
+    \end{cases}
 \end{equation}
-Where $\hat{\mathbf{R}} := \mathbf{R} + \sigma^2 \mathbf{G}^\top \nabla_\mathbf{x}^2 V(t,\mathbf{x})$ and the optimal control is $\mathbf{u}^\star(t,\mathbf{x}) =  - \hat{\mathbf{R}}^{-1}\mathbf{G}(t,\mathbf{x})^\top \nabla_\mathbf{x}V(t,\mathbf{x})$. Then, \ref{eq:HJB-PDE} is a parabolic PDE and can be solve using the FBSDE method as above. As well as before, the Itô formula gives a link between this PDE and forward-backward SDEs: TODO
+
+Consequently, the following partial differential equation arises:
+
+\begin{equation}
+    \label{eq:HJB-PDE}\tag{PDE-HJB}
+    \begin{cases}
+            \displaystyle \frac{\partial V(t,\mathbf{x})}{\partial t}
+            + q
+            + \nabla_\mathbf{x} V(t,\mathbf{x})^\top \mathbf{f}
+            - \frac{1}{2}\nabla_\mathbf{x}V(t,\mathbf{x})^\top \mathbf{G}\hat{\mathbf{R}}^{-1}\mathbf{G}^\top \nabla_\mathbf{x}V(t,\mathbf{x})
+            + \frac{1}{2}\mathrm{Tr}(\nabla_\mathbf{x}^2 V(t,\mathbf{x})\mathbf{\Sigma}\mathbf{\Sigma}^\top)
+            = 0
+        \\[7pt]
+        \displaystyle V(T,\mathbf{x}(T))  = \phi(\mathbf{x}(T))
+    \end{cases}
+\end{equation}
+where $\hat{\mathbf{R}} := \mathbf{R} + \sigma^2 \mathbf{G}^\top \nabla_\mathbf{x}^2 V(t,\mathbf{x})$ and the optimal control is $\mathbf{u}^\star(t,\mathbf{x}) =  - \hat{\mathbf{R}}^{-1}\mathbf{G}(t,\mathbf{x})^\top \nabla_\mathbf{x}V(t,\mathbf{x})$. Then, \ref{eq:HJB-PDE} is a parabolic PDE. \\
+
+One approach to tackling this PDE is by employing Itô's formula to construct an FBSDE scheme, as demonstrated in \cite{pereira2019deep}:
+
+\begin{equation}
+\begin{cases}
+    \displaystyle \dint X
+    = f \, \dint t
+    + \mathbf{G}\mathbf{u}^\star \, \dint t
+    + C \dint \epsilon
+    \\[7pt]
+    \displaystyle \dint V
+    = H(V) \, \dint t
+    + \nabla_\mathbf{x}V^\top \mathbf{G}\mathbf{u}^\star \, \dint t
+    + \nabla_\mathbf{x}V^\top \, C \dint \epsilon
+    \\[7pt]
+    \displaystyle
+    \dint \nabla_\mathbf{x}V
+    = H(\nabla_\mathbf{x}V) \, \dint t
+    + \nabla^2_\mathbf{x}V \mathbf{G}\mathbf{u}^\star \, \dint t
+    + \nabla^2_\mathbf{x} V C \dint \epsilon
+    \\[7pt]
+    \displaystyle
+    \mathbf{x}(0) = \xi,
+    \quad V(T) = \phi(x(T)),
+    \quad \nabla_\mathbf{x}V(T) = \phi(\mathbf{x}(T))
+\end{cases}
+\end{equation}
+
+Recent work by \cite{Han_2018} incorporates deep learning into the FBSDE representation (similarly to SB-FBSDE) and demonstrates its feasibility and numerical efficiency. The resulting algorithm is known as Deep FBSDEs. Building upon the work in \cite{Han_2018}, \cite{Wang_2019} improves the Deep-FBSDE approach by incorporating importance sampling within the FBSDE representation. Additionally, they propose a novel and scalable DNN architecture based on Long Short-Term Memory neural networks. This enhanced algorithm overcomes the limitations of the work in \cite{Han_2018} in terms of scalability and training speed.
+
+However, it is important to note that without a starting distribution, an ending distribution, and two coupled PDEs, it is not possible to establish a direct link between this problem and the Schrödinger Bridge problem. Therefore, SB-FB-SDE methods are not applicable in this case.
+
+
+
+\subsection{Mean-Field Games to create a link between HJB and SB FB-SDE}
+
+To bridge the gap between SB and PDEs, we introduce the Mean-Field Games theory.
+\cite{caluya2021wasserstein} show that these two problems are naturally connected.
+Mean-field game (MFG) theory aims to solve a set of coupled partial differential equations (PDEs) that describe the behaviour of a large number of rational agents or players in an interactive system.
+At its most general form, the MFG equations consist of the following PDEs:
+\begin{enumerate}
+\item Hamilton-Jacobi-Bellman (HJB) equation:
+\[
+-\frac{\partial u}{\partial t} + H(t, x, \nabla u, \rho) - \frac{1}{2}\nabla^2 u = F(x, \rho)
+\]
+This equation governs the dynamics of the value function \(u(t, x)\) of an individual agent. It represents the agent's optimization problem by considering the influence of the mean field \(\rho\) on the agent's decision-making process. The Hamiltonian function \(H\) captures the agent's preferences and constraints.
+
+\item Fokker-Planck (FP) equation:
+\[
+\frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \nabla_\rho H(x, \nabla u, \rho))- \frac{1}{2}\nabla^2 \rho= 0
+\]
+This equation describes the evolution of the mean field \(\rho(t, x)\) representing the distribution of the agents in the system. The function \(b\) captures the drift term that depends on the agents' behaviour, the gradient of the value function \(v\), and the density \(\rho\).
+\end{enumerate}
+
+These PDEs form the core equations of MFG theory, capturing the interplay between individual optimization problems (HJB equation) and the evolution of the distribution of agents (FP equation).
+
+It finds applications in various fields, including economics, finance, traffic modelling, biology and social sciences, among others.
+
+In \cite{liu2022deep}, they link directly this MFG equations to the Schrödinger Bridge problem through two steps :
+\begin{enumerate}
+    \item Replace the Hamiltonian  by its linear: $H(x, \nabla u, \rho) := \frac{1}{2} \|\sigma \nabla u\|^2 - \nabla u^T f(x, \rho)$
+
+    \begin{equation}
+    \label{eq:mfg_pdes}
+    \begin{cases}
+        \displaystyle -\frac{\partial u(x,t)}{\partial t}
+        + \frac{1}{2} \norme{\sigma \nabla u}^2
+        - \nabla u^\top f
+        - \frac{1}{2} \sigma^2 \Delta u
+        = F(x, \rho)
+        & \; \rho(x, 0) = \rho_0(x) \\[7pt]
+        \displaystyle \frac{\partial \rho(x,t)}{\partial t}
+        - \nabla \cdot \left(\rho (\sigma^2 \nabla u - f)\right)
+        - \frac{1}{2} \sigma^2 \Delta \rho
+        = 0
+        & \; \rho(x, T) = \rho_{\rm target}(x)
+    \end{cases}
+    \end{equation}
+    % \begin{align*}
+    %     -\frac{\partial u(x,t)}{\partial t} + \frac{1}{2} k \sigma \nabla u^2 - \nabla u > f - \frac{1}{2} \sigma^2 \Delta u &= F(x, \rho) \\
+    %     \frac{\partial \rho(x,t)}{\partial t} - \nabla \cdot \left(\rho (\sigma^2 \nabla u - f)\right) - \frac{1}{2} \sigma^2 \Delta \rho &= 0 \\
+    %     \rho(x, 0) &= \rho_0(x) \\
+    %     \rho(x, T) &= \rho_{\text{target}}(x)
+    % \end{align*}
+
+    \item Apply the Hopf-Cole transform:
+    \begin{equation}
+        \begin{cases}
+            \displaystyle \psi(x, t) := \exp (-u(x, t)) \\[7pt]
+            \displaystyle \widehat{\psi}(x, t) := \rho(x, t) \exp (u(x, t))
+        \end{cases}
+    \end{equation}
+% \begin{align*}
+% \psi(x, t) &:= \exp (-u(x, t)) \\
+% \widehat{\psi}(x, t) &:= \rho(x, t) \exp (u(x, t))
+% \end{align*}
+
+\end{enumerate}
+
+With some additional calculation, we obtain the following PDEs:
+\begin{equation}
+    \begin{cases}
+        \displaystyle \partiald{\psi(x, t)}{t}
+        = - \nabla \psi^\top f
+        - \frac{1}{2} \sigma^2 \Delta \psi
+        + F \psi \\[7pt]
+        \displaystyle \partiald{\widehat\psi(x, t)}{t}
+        = - \nabla \cdot (\widehat\psi f)
+        + \frac{1}{2} \sigma^2 \Delta \widehat\psi
+        - F \widehat\psi
+    \end{cases}
+    \mathrm{s.t.}
+    \begin{array}{l}
+        \psi(0, \cdot) \widehat{\psi}(0, \cdot)= \rho_0 \\
+        \psi(T, \cdot) \widehat{\psi}(T, \cdot)= \rho_{\rm target}
+    \end{array}
+\end{equation}
+
+When $F(x, \rho) = 0$, we obtain exactly the two PDEs associated to the Schrödinger Bridge \eqref{eq:sb_pdes}.
+\cite{liu2022deep} uses that to generalize the idea of Schrödinger Bridge and take into account, $F(x, \rho)$ allowing them to use the identity \eqref{9} to derive new losses to train their network to solve Mean-Field Games.
+
+
+\subsection{Experiments on Mean-Field Games}
+
+Driven by the work of \cite{liu2022deep}, we choose to explore the possibility of this new SB-FBSDE generalized for Mean Field Games.
+
+One important point to notice is this framework only solves MFG with hard distributional constraints
+$(\rho_0, \rho_{target})$.
+
+Mean Field Games can, among other thing, describe how a crowd evolves. We will try to see, using the generalized framework of SB-FBSDE, if we can understand the mechanism of a crowd and also the limits of the framework.
+
+
+\subsubsection{The setup}
+
+To model the evacuation of a building using MFG, we consider a large population of individuals who need to exit the building safely and efficiently. Each individual aims to minimize their own evacuation time while avoiding collisions with others. The behaviour of the agents is captured by their strategies, which specify their movements through the building. The dynamics of the system can be described using PDEs derived from Hamilton-Jacobi-Bellman equations as described earlier.
+
+If we re-use the equations \eqref{eq:mfg_pdes}
+% \begin{align*}
+%         -\frac{\partial u(x,t)}{\partial t} + \frac{1}{2} k \sigma \nabla u^2 - \nabla u > f - \frac{1}{2} \sigma^2 \Delta u &= F(x, \rho) \\
+%         \frac{\partial \rho(x,t)}{\partial t} - \nabla \cdot \left(\rho (\sigma^2 \nabla u - f)\right) - \frac{1}{2} \sigma^2 \Delta \rho &= 0 \\
+%         \rho(x, 0) &= \rho_0(x) \\
+%         \rho(x, T) &= \rho_{\text{target}}(x)
+% \end{align*}
+with $u$ corresponding to the common strategy and $\rho$ the density of people. The function $F$ in the equation for the strategy represents a combination of obstacle effects such as walls, doors, or other physical constraints $F_{obstacle}$ that affect the strategy based on the spatial variable $x$, as well as the interactions among individuals $F_{congestion}$ captured through the density $\rho$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Figures/stage10_double.pdf}
+    \\
+    \includegraphics[width=0.8\textwidth]{Figures/stage20_double.pdf}
+    \\
+    \includegraphics[width=0.8\textwidth]{Figures/stage40_double.pdf}
+    \caption{Forward process. From top to bottom, Step n° $10, 20, 40$ of forward-backward pass.}
+    \label{fig:fb_pass}
+\end{figure}
+
+On the Figure \ref{fig:fb_pass}, we can see that at step 10, half of the potential ("policy") has not been learned yet. At $t = 0.75T$, the distribution comes back up and is partially stuck against the second wall. At step 20, there is still some deformation of the distribution toward the interior of the obstacles, and the population is more spread out. Lastly, at step 40, the trajectory is optimized and compact.
+
+Further work on our \href{https://github.com/gwatkinson/mva_sb_generative}{GitHub} highlight the impact of the congestion parameter K:
+\[
+F_{\rm congestion}(x, \rho) = \esp[y \sim \rho]{\frac{K}{\norme{x - y}^2 +1 }}
+\]
+
+It also underlines, as described in \cite{PhysRevLett.107.278001}, that adding an obstacle just before the exit help reduce the density.
+\section*{Conclusion}
+
+In conclusion, \cite{chen2023likelihood} have proposed a new method leveraging the power of Schrödinger Bridges in the context of generative modelling.
+To do so, they had to use tools from Stochastic Optimal Control to solve complex PDEs.
+In this process, they made a link between Schrödinger Bridges and Score-based Generative Models using the lower-bound of the log-likelihood developed in \cite{song2021maximum}.
+
+We then explored the use of Schrödinger Bridges Forward Backward SDEs to solve the more general Mean-Field Games \cite{caluya2021wasserstein, liu2022deep}, that consist of the Hamilton-Jacobi-Bellman and Fokker-Planck PDEs, placing this method at the intersection of generative modelling, entropy regularized optimal transport and reinforcement learning.
+
+The use of Schrödinger Bridges is an elegant solution to generative modelling, backed by a well-founded mathematical framework and detailed practical implementations.
+However, it is hard to quantify if it actually outperforms current SGM models on generative tasks, without exhaustive and complex high dimensional experiments. But this approach is clearly interesting and allows for a broader interpretation of SGMs.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{From Schrodinger to SDE: j'écris juste là pour éviter de casser tes trucs, mais globalement on se retrouve à la fin pour fusionner}
-
-The Schrödinger Bridge problem, a fundamental topic in probability theory and stochastic analysis, involves finding a probability distribution that connects two given distributions at different time points. In this research project, we focus on solving this problem using the Forward-Backward Stochastic Differential Equations (FB-SDE) framework. Specifically, we compare two formulations: one based on diffusion processes and the other derived from the Benamou-Brenier formulation of the Schrödinger Bridge.
-
-In this equation (named equation (1)):
-\begin{equation}\label{eq:sgm1}
-\begin{aligned}
-\dint{\mathbf{X}_t} & = f(t,\mathbf{X}_t)\dint{t} + g(t) \dint{\mathbf{W}_t}, \quad \mathbf{X}_0 \sim p_\mathrm{data}\\
-(\text{time-reversal}) \quad \dint{\mathbf{X}_t} & = \bracks{f(t,\mathbf{X}_t) - g(t)^2\nabla_x\log p_t(\mathbf{X}_t)}\dint{t} + g(t) \dint{\mathbf{W}_t}, \quad \mathbf{X}_T \sim p_T
-\end{aligned}
-\end{equation}
-the SDE associated with the diffusion process is presented. It describes the evolution of $\mathbf{X}_t$ from an initial distribution $p\mathrm{data}$ to a final distribution $p_T$ at time $T$. Notably, the time-reversal version of Equation (1) provides insights into the backward dynamics of the process.
-
-On the other hand, this equation (named equation (2)):
-$$
-\begin{aligned}
-    \dint\mathbf{X}_t & = \bracks{f+g^2\nabla_x\log\Psi(t,\mathbf{X}_t)}\dint t + g\dint \mathbf{W}_t, \quad \mathbf{X}_0 \sim p_\mathrm{data}\\
-    \dint \mathbf{X}_t & = \bracks{f-g^2\nabla_x\log\widehat\Psi(t,\mathbf{X}_t)}\dint t + g \dint \mathbf{W}_t, \quad \mathbf{X}_T \sim p_\mathrm{prior}
-\end{aligned}
-$$
-
-corresponds to the SDE derived from the Benamou-Brenier formulation of the Schrödinger Bridge. It introduces two different potentials, $\Psi(t,\mathbf{X}_t)$ and $\widehat\Psi(t,\mathbf{X}t)$, which influence the evolution of $\mathbf{X}t$. Theyfollow the following PDEs:
-
-\begin{equation}\label{eq:SB-PDE}\tag{SB-PDE}
-\begin{aligned}
-&\left\{\begin{array}{cc}
-  \frac{\partial\Psi}{\partial t}   & = -\nabla_x\Psi^\top f - \frac{1}{2}\mathrm{Tr}(g^2\nabla_x^2\Psi)  \\
-     \frac{\partial\widehat{\Psi}}{\partial t} & = -\nabla_x.(\widehat{\Psi}f) + \frac{1}{2}\mathrm{Tr}(g^2\nabla_x^2\widehat{\Psi})
-\end{array}\right. \\
-\mathrm{s.t.}\; &\Psi(0,.)\widehat\Psi(0,.) = p_\mathrm{data}, \,\Psi(T,.)\widehat\Psi(T,.) = p_\mathrm{prior}
-\end{aligned}
-\end{equation}
-
-The initial and final distributions, $p\mathrm{data}$ and $p\mathrm{prior}$ respectively, play a crucial role in this formulation.
-
-Although these two formulations exhibit similarities, there exists a fundamental distinction. In certain cases, such as linear or degenerate situations, Equation (1) admits an analytical solution for the score function. This analytical solution greatly simplifies the process of generating $X_0$ from $X_T$. However, Equation (2) requires solving a coupled system of PDEs to obtain an analytical solution.
-
-In this project, our primary objective is to recover the score function, as it enables straightforward generation of $X_0$ from $X_T$. To achieve this, we focus on the formulation presented in Equation (4) :
-\begin{equation}\label{eq:newFBSDE}
-\def\arraystretch{2.2}
-\left\{\begin{array}{ll}
-  \dint\mathbf{X}_t & = (f+g\mathbf{Z}_t) \dint t + g \dint \mathbf{W}_t  \\
-  \dint\mathbf{Y}_t & = \frac{1}{2}\mathbf{Z}_t^\top\mathbf{Z}_t\dint t + \mathbf{Z}_t^\top\dint\mathbf{W}_t \\
-  \dint\widehat{\mathbf{Y}}_t & = \pars{\frac{1}{2}\widehat{\mathbf{Z}}_t^\top\widehat{\mathbf{Z}}_t + \nabla_\mathbf{x} . (g\widehat{\mathbf{Z}}_t - f) + \widehat{\mathbf{Z}}_t^\top\widehat{\mathbf{Z}}_t} \dint t + \widehat{\mathbf{Z}}_t^\top\dint\mathbf{W}_t
-\end{array}\right.
-\end{equation}
-
-By knowing $Z_t$ and $\hat{Z}_t$, we can determine the score function and effectively solve the Schrödinger Bridge problem.
-
-To learn $Z_t$ and $\hat{Z}_t$, we adopt a parametric approach, typically employing a neural network as the function approximator. Similar to the score function, we require a tractable and effective loss function. In this regard the following loss, proves advantageous as it introduces a novel loss function derived from the likelihood expression:
-\begin{equation}\label{eq:logpSB}
-\begin{aligned}
-\log p_0^\mathrm{SB}(x_0) & = E\left[\log p_T(X_T)\right] - \int_0^T E\left[\frac{1}{2}\|Z_t\|^2 + \frac{1}{2}\|\hat{Z}_t - g\nabla_x \log p_t^\mathrm{SB} + Z_t\|^2 - \frac{1}{2}\|g\nabla_x \log p_t^\mathrm{SB} - Z_t\|^2 - \nabla_x \cdot f\right] dt, \\
-& = E\left[\log p_T(X_T)\right] - \int_0^T E\left[\frac{1}{2}\|Z_t\|^2 + \frac{1}{2}\|\hat{Z}_t\|^2 + \nabla_x \cdot (g\hat{Z}_t - f) + \hat{Z}_t^T Z_t\right] dt
-\end{aligned}
-\end{equation}
-The key advantage of this loss function is its exclusion of the score function, thereby simplifying the learning process to solely involve $Z_t$ and $Z_t^\mathrm{hat}$.
-
-This function is derivated similarly to the following loss used in diffusion process but also using equation (4):
-\begin{equation}
-\begin{aligned}
-\log p_0^{\mathrm{SGM}}(x_0) & \geq \mathcal{L}_\mathrm{SGM}(x_0; \theta) = E[\log p_T(X_T)] - \int_0^T E\left[\frac{1}{2}g^2\|s_t\|^2 + \nabla_x \cdot (g^2s_t - f)\right] dt, \\
-& = E[\log p_T(X_T)] - \int_0^T E\left[\frac{1}{2}g^2\left\|s_t - \nabla_x \log p_{t|x_0}\right\|^2 - \frac{1}{2}\left\|g\nabla_x \log p_{t|x_0}\right\|^2 - \nabla_x \cdot f\right] dt,
-\end{aligned}
-\end{equation}
+% Mail
+% generative.modeling.mva@gmail.com
 
 
-
-
-
-
-
-
-
-\newpage
 
 % Bibliographie
-\newpage
-\nocite{*}
+\clearpage
+% \nocite{*}
+\bibliographystyle{unsrtnat}
 \addcontentsline{toc}{section}{Reference}
 \bibliography{bibliography}
 

@@ -78,6 +78,11 @@
 % Indicatrice
 \newcommand{\1}[1][]{\mathds{1}_{#1}}
 
+% max, min, argmax et argmin avec subscript
+\newcommandx{\maxx}[1]{\underset{#1}{\max}}
+\newcommandx{\minn}[1]{\underset{#1}{\min}}
+\newcommandx{\argmax}[1][1]{\underset{#1}{\arg\max}}
+\newcommandx{\argmin}[1][1]{\underset{#1}{\arg\min}}
 
 % matrice 3*3 diagonale avec la diagonale donnée sur les 3 arguments
 \newcommand{\mattroisdiag}[3]{\left( \begin{array}{ccc} #1 &  0 &  0 \\ 0  & #2 &  0 \\ 0  &  0 & #3\end{array} \right)}
@@ -118,16 +123,3 @@
 \newcommand{\kronecker}[0]{\mathrm{\delta}} % symbole de Kronecker
 \newcommand{\heaviside}[0]{\mathrm{H}}      % fonctions d'Heaviside
 \newcommand{\dirac}[0]{\mathrm{\delta}}     % Distribution de Dirac
-
-% max, min, argmax et argmin avec subscript
-\newcommandx{\maxx}[1]{\underset{#1}{\max}}
-\newcommandx{\minn}[1]{\underset{#1}{\min}}
-\newcommandx{\argmax}[1][1]{\underset{#1}{\arg\max}}
-\newcommandx{\argmin}[1][1]{\underset{#1}{\arg\min}}
-\DeclareMathOperator*{\spann}{Span}	% Span, e.g. $\spann\{X_1,...,X_n\}$
-\DeclareMathOperator*{\bias}{Bias}	% Bias, e.g. $\bias(\hat\theta)$
-\DeclareMathOperator*{\ran}{ran}		% Range of an operator, e.g. $\ran(T)
-\DeclareMathOperator*{\dv}{d\!}		% Non-italicized 'with respect to', e.g. $\int f(x) \dv x$
-\DeclareMathOperator*{\diag}{diag}	% Diagonal of a matrix, e.g. $\diag(M)$
-\DeclareMathOperator*{\trace}{trace}	% Trace of a matrix, e.g. $\trace(M)$
-\DeclareMathOperator*{\supp}{supp}	% Support of a function, e.g., $\supp(f)$

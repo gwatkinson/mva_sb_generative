@@ -1,3 +1,12 @@
+@misc{caluya2021wasserstein,
+    title         = {Wasserstein Proximal Algorithms for the Schr\"{o}dinger Bridge Problem: Density Control with Nonlinear Drift},
+    author        = {Kenneth F. Caluya and Abhishek Halder},
+    year          = {2021},
+    eprint        = {1912.01244},
+    archiveprefix = {arXiv},
+    primaryclass  = {math.OC}
+}
+
 @misc{chen2020stochastic,
     title         = {Stochastic control liaisons: Richard Sinkhorn meets Gaspard Monge on a Schroedinger bridge},
     author        = {Yongxin Chen and Tryphon T. Georgiou and Michele Pavon},
@@ -28,6 +37,7 @@
     year      = {2021}
 }
 
+
 @article{EXARCHOS2018159,
     title    = {Stochastic optimal control via forward and backward stochastic differential equations and importance sampling},
     journal  = {Automatica},
@@ -42,6 +52,19 @@
     abstract = {The aim of this work is to present a novel sampling-based numerical scheme designed to solve a certain class of stochastic optimal control problems, utilizing forward and backward stochastic differential equations (FBSDEs). By means of a nonlinear version of the Feynman–Kac lemma, we obtain a probabilistic representation of the solution to the nonlinear Hamilton–Jacobi–Bellman equation, expressed in the form of a system of decoupled FBSDEs. This system of FBSDEs can be solved by employing linear regression techniques. The proposed framework relaxes some of the restrictive conditions present in recent sampling based methods within the Linearly Solvable Optimal Control framework, and furthermore addresses problems in which the time horizon is not prespecified. To enhance the efficiency of the proposed scheme when treating more complex nonlinear systems, we then derive an iterative algorithm based on Girsanov’s theorem on the change of measure, which features importance sampling. This scheme is shown to be capable of learning the optimal control without requiring an initial guess.}
 }
 
+@article{Han_2018,
+    doi       = {10.1073/pnas.1718942115},
+    url       = {https://doi.org/10.1073\%2Fpnas.1718942115},
+    year      = 2018,
+    month     = {aug},
+    publisher = {Proceedings of the National Academy of Sciences},
+    volume    = {115},
+    number    = {34},
+    pages     = {8505--8510},
+    author    = {Jiequn Han and Arnulf Jentzen and Weinan E},
+    title     = {Solving high-dimensional partial differential equations using deep learning},
+    journal   = {Proceedings of the National Academy of Sciences}
+}
 
 @article{kullback1968probability,
     title     = {Probability densities with given marginals},
@@ -101,6 +124,21 @@
     primaryclass  = {cs.LG}
 }
 
+@article{PhysRevLett.107.278001,
+    title     = {Silo Clogging Reduction by the Presence of an Obstacle},
+    author    = {Zuriguel, Iker and Janda, Alvaro and Garcimart\'{\i}n, Angel and Lozano, Celia and Ar\'evalo, Roberto and Maza, Diego},
+    journal   = {Phys. Rev. Lett.},
+    volume    = {107},
+    issue     = {27},
+    pages     = {278001},
+    numpages  = {5},
+    year      = {2011},
+    month     = {Dec},
+    publisher = {American Physical Society},
+    doi       = {10.1103/PhysRevLett.107.278001},
+    url       = {https://link.aps.org/doi/10.1103/PhysRevLett.107.278001}
+}
+
 @inproceedings{pmlr-v120-pereira20a,
     title     = {Feynman-Kac Neural Network Architectures for Stochastic Control Using Second-Order FBSDE Theory},
     author    = {Pereira, Marcus and Wang, Ziyi and Chen, Tianrong and Reed, Emily and Theodorou, Evangelos},
@@ -133,6 +171,7 @@
     abstract  = {We propose to learn a generative model via entropy interpolation with a Schr{ö}dinger Bridge. The generative learning task can be formulated as interpolating between a reference distribution and a target distribution based on the Kullback-Leibler divergence. At the population level, this entropy interpolation is characterized via an SDE on [0,1] with a time-varying drift term. At the sample level, we derive our Schr{ö}dinger Bridge algorithm by plugging the drift term estimated by a deep score estimator and a deep density ratio estimator into the Euler-Maruyama method. Under some mild smoothness assumptions of the target distribution, we prove the consistency of both the score estimator and the density ratio estimator, and then establish the consistency of the proposed Schr{ö}dinger Bridge approach. Our theoretical results guarantee that the distribution learned by our approach converges to the target distribution. Experimental results on multimodal synthetic data and benchmark data support our theoretical findings and indicate that the generative model via Schr{ö}dinger Bridge is comparable with state-of-the-art GANs, suggesting a new formulation of generative learning. We demonstrate its usefulness in image interpolation and image inpainting.}
 }
 
+
 @inproceedings{schrodinger1932theorie,
     title     = {Sur la th{\'e}orie relativiste de l'{\'e}lectron et l'interpr{\'e}tation de la m{\'e}canique quantique},
     author    = {Schr{\"o}dinger, Erwin},
@@ -158,7 +197,6 @@
     primaryclass  = {stat.ML}
 }
 
-
 @article{vargas2021solving,
     title     = {Solving Schr{\"o}dinger bridges via maximum likelihood},
     author    = {Vargas, Francisco and Thodoroff, Pierre and Lamacraft, Austen and Lawrence, Neil},
@@ -168,4 +206,16 @@
     pages     = {1134},
     year      = {2021},
     publisher = {MDPI}
+}
+
+@inproceedings{Wang_2019,
+    doi       = {10.15607/rss.2019.xv.070},
+    url       = {https://doi.org/10.15607\%2Frss.2019.xv.070},
+    year      = 2019,
+    month     = {jun},
+    publisher = {Robotics: Science and Systems Foundation},
+    author    = {Ziyi Wang and Marcus Pereira and , Ioannis Exarchos and Evangelos Theodorou},
+    title     = {Learning Deep Stochastic Optimal Control Policies Using Forward-Backward {SDEs}
+                 },
+    booktitle = {Robotics: Science and Systems {XV}}
 }

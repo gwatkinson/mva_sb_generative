@@ -18,8 +18,7 @@
 % last revision: March 2022
 
 \NeedsTeXFormat{LaTeX2e}
-% \ProvidesPackage{neurips_2022}[2022/03/31 NeurIPS 2022 submission/camera-ready style file]
-\ProvidesPackage{neurips_2022}
+\ProvidesPackage{neurips_2022}[2022/03/31 NeurIPS 2022 submission/camera-ready style file]
 
 % declare final option, which creates camera-ready copy
 \newif\if@neuripsfinal\@neuripsfinalfalse
@@ -240,7 +239,7 @@
     }
     \thispagestyle{empty}
     \@maketitle
-    \@thanks
+    % \@thanks
     % \@notice
   \endgroup
   \let\maketitle\relax
@@ -294,14 +293,14 @@
 }
 
 % add conference notice to bottom of first page
-\newcommand{\ftype@noticebox}{8}
-\newcommand{\@notice}{%
+%\newcommand{\ftype@noticebox}{8}
+%\newcommand{\@notice}{%
   % give a bit of extra room back to authors on first page
-  \enlargethispage{2\baselineskip}%
-  \@float{noticebox}[b]%
-    \footnotesize\@noticestring%
-  \end@float%
-}
+ % \enlargethispage{2\baselineskip}%
+  %\@float{noticebox}[b]%
+   % \footnotesize\@noticestring%
+  %\end@float%
+%}
 
 % abstract styling
 \renewenvironment{abstract}%
