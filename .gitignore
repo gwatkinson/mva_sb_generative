@@ -2,6 +2,7 @@
 data
 papiers
 .python-version
+**/old*
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,latex
