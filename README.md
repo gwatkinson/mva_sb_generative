@@ -14,7 +14,7 @@ This is a group project realised by :
 
 Don't hesitate to contact any of us if you have any questions.
 
-This experiments presented here and in the report comes from modification of https://github.com/ghliu/DeepGSB/tree/main. 
+This experiments presented here and in the report comes from modification of https://github.com/ghliu/DeepGSB.
 
 ## Installation
 
@@ -33,6 +33,8 @@ conda activate deepgsb
 
 ## Reproduce the experiments
 
+To reproduce the experiments, you can run the following commands:
+
 ```bash
 cd DeepGSB
 bash run.sh Evac
@@ -44,6 +46,13 @@ bash run.sh Evac
   title={Deep Generalized Schr{\"o}dinger Bridge},
   author={Liu, Guan-Horng and Chen, Tianrong and So, Oswin and Theodorou, Evangelos A},
   booktitle={Advances in Neural Information Processing Systems},
+  year={2022}
+}
+
+@inproceedings{chen2022likelihood,
+  title={Likelihood Training of Schr{\"o}dinger Bridge using Forward-Backward SDEs Theory},
+  author={Chen, Tianrong and Liu, Guan-Horng and Theodorou, Evangelos A},
+  booktitle={International Conference on Learning Representations},
   year={2022}
 }
 ```
