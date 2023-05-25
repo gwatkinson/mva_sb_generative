@@ -39,9 +39,29 @@ To reproduce the experiments, you can run the following commands:
 cd DeepGSB
 bash run.sh Evac
 ```
+
+## Results
+
+The report can be found in the root of the repo in [report.pdf](https://github.com/gwatkinson/mva_sb_generative/blob/main/report.pdf).
+
+The slides of the presentation are also available in the root of the repo in [presentation.pdf](https://github.com/gwatkinson/mva_sb_generative/blob/main/slides.pdf)
+
+Lastly, some images of our experiments can be found in the [images folder](https://github.com/gwatkinson/mva_sb_generative/blob/main/images/).
+
+![No obstacle GIF](DeepGSB/assets/Vneck.gif)
+
+![No obstacle](images/no_obstacle.png)
+![Little obstacle](images/little_obstacle.png)
+![Big obstacle](images/big_obstacle.png)
+Those images show the impact of an obstacle in front of a door, simulating an evacuation or a crowd movement.
+
+![Stage 10](images/stage10.png)
+![Stage 20](images/stage20-1.png)
+![Stage 40](images/stage40-5.png)
+
 ## Credits
 
-```
+```latex
 @inproceedings{liu2022deep,
   title={Deep Generalized Schr{\"o}dinger Bridge},
   author={Liu, Guan-Horng and Chen, Tianrong and So, Oswin and Theodorou, Evangelos A},
