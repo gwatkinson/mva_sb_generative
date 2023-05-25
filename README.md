@@ -48,8 +48,6 @@ The slides of the presentation are also available in the root of the repo in [pr
 
 Lastly, some images of our experiments can be found in the [images folder](https://github.com/gwatkinson/mva_sb_generative/blob/main/images/).
 
-![No obstacle GIF](DeepGSB/assets/Vneck.gif)
-
 ![No obstacle](images/no_obstacle.png)
 ![Little obstacle](images/little_obstacle.png)
 ![Big obstacle](images/big_obstacle.png)
